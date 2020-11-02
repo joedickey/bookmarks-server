@@ -1,6 +1,7 @@
 const express = require('express')
 const { v4: uuid } = require('uuid')
 const logger = require('../logger')
+const BookmarksService = require('../bookmarks-service')
 
 const bookmarksRouter = express.Router()
 const bodyParser = express.json()
@@ -11,30 +12,33 @@ const bookmarks = [
     title: 'Google',
     url: 'http://www.google.com',
     rating: '3',
-    desc: 'Internet-related services and products.'
+    description: 'Internet-related services and products.'
   },
   {
     id: 1,
     title: 'Thinkful',
     url: 'http://www.thinkful.com',
     rating: '5',
-    desc: '1-on-1 learning to accelerate your way to a new high-growth tech career!'
+    description: '1-on-1 learning to accelerate your way to a new high-growth tech career!'
   },
   {
     id: 2,
     title: 'Github',
     url: 'http://www.github.com',
     rating: '4',
-    desc: 'brings together the world\'s largest community of developers.'
+    description: 'brings together the world\'s largest community of developers.'
   }
 ]
 
 bookmarksRouter
   .route('/bookmarks')
-  .get((req, res) => {
-    res
-      .status(200)
-      .json(bookmarks)
+  .get((req, res, next) => {
+    const knexInstance = req.app.get('db')
+    BookmarksService.getAllBookmarks(knexInstance)
+      .then(bkmrks => {
+        res.json(bkmrks)
+      })
+      .catch(next)
   })
   .post(bodyParser, (req, res) => {
     const { title, url, rating, desc } = req.body;
@@ -111,18 +115,18 @@ bookmarksRouter
 
 bookmarksRouter
   .route('/bookmarks/:id')
-  .get((req, res) => {
-    const { id } = req.params
-    const bookmark = bookmarks.find(bmk => bmk.id == id)
-
-    if (!bookmark) {
-      logger.error(`Bookmark with id ${id} not found.`)
-      return res  
-        .status(404)
-        .send('Bookmark not found.')
-    }
-
-    res.json(bookmark)
+  .get((req, res, next) => {
+    const knexInstance = req.app.get('db')
+    BookmarksService.getById(knexInstance, req.params.id)
+      .then(bkmrk => {
+        if(!bkmrk) {
+          return res.status(404).json({
+            error: {message: 'Bookmark not found.'}
+          })
+        }
+        res.json(bkmrk)
+      })
+      .catch(next)
   })
   .delete((req, res) => {
     const { id } = req.params
@@ -142,6 +146,7 @@ bookmarksRouter
     res
       .status(204)
       .end();
+      
   })
 
 module.exports = bookmarksRouter

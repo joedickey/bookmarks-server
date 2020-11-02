@@ -47,3 +47,9 @@
 {"message":"Bookmark with id b3fc0ad2-6257-4e7c-bb1e-da13d19f6d47 created","level":"info"}
 {"message":"Bookmark with id b3fc0ad2-6257-4e7c-bb1e-da13d19f6d47 deleted.","level":"info"}
 {"message":"Bookmark with id 44 not found.","level":"error"}
+{"message":"Unauthorized request to path: /","level":"error"}
+{"message":"Unauthorized request to path: /bookmarks","level":"error"}
+{"message":"Unauthorized request to path: /","level":"error"}
+{"message":"Unauthorized request to path: /bookmarks","level":"error"}
+{"message":"Unauthorized request to path: /bookmarks","level":"error"}
+{"message":"Bookmark with id 12345 not found.","level":"error"}
